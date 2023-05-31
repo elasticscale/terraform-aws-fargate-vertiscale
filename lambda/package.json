@@ -1,0 +1,14 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.342.0",
+    "@aws-sdk/client-ecs": "^3.342.0",
+    "@aws-sdk/lib-dynamodb": "^3.342.0"
+  }
+}
