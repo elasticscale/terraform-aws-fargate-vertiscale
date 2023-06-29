@@ -87,6 +87,14 @@ export const handler: Handler = async (
     // this is a request to run a task
     return await extractRequestParameters(event);
   }
+  if (event['detail-type'] == 'ECS Task State Change') {
+    // this is a task change event
+    return await handleTaskStateChange(event);
+  }
+  throw new Error('Invalid event type');
+};
+
+const handleTaskStateChange = async (event: EcsTaskChangeEvent) => {
   if (
     event['detail']['group'] &&
     event['detail']['group'].startsWith('service')
@@ -124,37 +132,37 @@ export const handler: Handler = async (
     );
   }
   await runTask(taskDetails, newCpuMemory['cpu'], newCpuMemory['memory']);
-  return 'tasks have been started';
 };
 
-const extractRequestParameters = async (event: AwsApiCallViaCloudTrailEvent) => {
-  if (!hasAutoscaleTag(event['detail']['requestParameters'])) {
-    return (
-      event['detail']['taskArn'] +
-      ' did not have the autoscaleMemory tag attached'
-    );
-  }
+const extractRequestParameters = async (
+  event: AwsApiCallViaCloudTrailEvent,
+) => {
   const tasks = [];
   for (const task of event['detail']['responseElements']['tasks']) {
-    try {
-      await storeInvocationDetails(
-        task['taskArn'],
-        event['detail']['requestParameters'],
-      );
-      tasks.push(task['taskArn']);
-    } catch (error) {
-      console.error(
-        'task ' +
-          task['taskArn'] +
-          ' could not be saved in dynamodb: ' +
-          error.message,
-      );
+    if (hasAutoscaleTag(event['detail']['requestParameters'])) {
+      try {
+        await storeInvocationDetails(
+          task['taskArn'],
+          event['detail']['requestParameters'],
+        );
+        tasks.push(task['taskArn']);
+      } catch (error) {
+        console.error(
+          'task ' +
+            task['taskArn'] +
+            ' could not be saved in dynamodb: ' +
+            error.message,
+        );
+      }
     }
   }
   return 'these tasks saved in dynamodb: ' + tasks.join(', ');
 };
 
-const storeInvocationDetails = async (taskArn, data) => {
+const storeInvocationDetails = async (
+  taskArn: string,
+  data: CloudTrailEvent['requestParameters'],
+) => {
   const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
   const input = {
     TableName: 'fargateAutoScale',
@@ -168,7 +176,6 @@ const storeInvocationDetails = async (taskArn, data) => {
 };
 
 const hasAutoscaleTag = (hasTags) => {
-  console.log(hasTags);
   for (const tag of hasTags['tags']) {
     if (tag['name'] == 'autoscaleMemory ') {
       return true;
@@ -244,7 +251,7 @@ const findCapacitySetting = (capacity, cpu, memory) => {
     // memory is out of range anyway
     return false;
   }
-  let memoryOptions = [];
+  const memoryOptions = [];
   for (
     let limit = capacity[cpu]['memoryStart'];
     capacity[cpu]['memoryEnd'] >= limit;
@@ -293,7 +300,7 @@ const runTask = async (task, newCpu, newMemory) => {
   parameters['overrides']['cpu'] = newCpu.toString();
   parameters['overrides']['memory'] = newMemory.toString();
   // start the task
-  const client = new ECSClient();
+  const client = new ECSClient({});
   const command = new RunTaskCommand(parameters);
   const response = await client.send(command);
   for (const taskResponse of response['tasks']) {
