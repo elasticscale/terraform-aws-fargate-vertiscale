@@ -28,6 +28,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
     "@types/jest": "^28.1.8",
     "@types/node": "^18.6.1",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
@@ -48,6 +49,11 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudtrail": "^3.362.0",
+    "@aws-sdk/client-dynamodb": "^3.362.0",
+    "@aws-sdk/client-ecs": "^3.362.0",
+    "@aws-sdk/lib-dynamodb": "^3.362.0",
+    "aws-lambda": "^1.0.7",
     "jest-cucumber": "^3.0.1"
   }
 }
