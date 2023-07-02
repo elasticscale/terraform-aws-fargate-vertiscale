@@ -48,6 +48,7 @@ data "archive_file" "lambda_ct" {
   source_dir  = "${path.module}/lambdaAwsApiCallViaCloudTrail/build"
   output_path = "lambda_ct.zip"
 }
+
 resource "aws_cloudwatch_event_rule" "ct_event_rule" {
   name        = "${var.prefix}-cloudTrailRule"
   description = "Captures RunTask commands from CloudTrail with the correct tags"
@@ -74,7 +75,6 @@ resource "aws_cloudwatch_event_rule" "ct_event_rule" {
     }
   })
 }
-
 resource "aws_cloudwatch_event_target" "ct_event_target" {
   target_id = "${var.prefix}-lambdaAwsApiCallViaCloudTrail"
   rule      = aws_cloudwatch_event_rule.ct_event_rule.name
@@ -95,7 +95,6 @@ resource "aws_lambda_function" "lambda_ct" {
     }
   }
 }
-
 resource "aws_lambda_permission" "lambda_ct_resource_policy" {
   statement_id  = "${var.prefix}-allowEventBridge"
   action        = "lambda:InvokeFunction"
@@ -103,4 +102,3 @@ resource "aws_lambda_permission" "lambda_ct_resource_policy" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.ct_event_rule.arn
 }
-
