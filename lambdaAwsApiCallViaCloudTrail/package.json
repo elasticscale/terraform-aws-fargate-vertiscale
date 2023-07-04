@@ -34,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "aws-lambda-mock-context": "^3.2.1",
+    "aws-sdk-client-mock": "^3.0.0",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-jest": "^26.6.0",
@@ -52,7 +53,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.362.0",
     "@aws-sdk/client-ecs": "^3.364.0",
-    "@aws-sdk/lib-dynamodb": "^3.362.0",
+    "@aws-sdk/lib-dynamodb": "^3.365.0",
     "aws-lambda": "^1.0.7"
   }
 }

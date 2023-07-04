@@ -11,8 +11,11 @@ export const handler = async (
   >,
 ) => {
   const tasks = [];
-  if (!event['detail']['responseElements']['tasks']) {
-    throw new Error('no tasks found in responseElements');
+  if (
+    !event['detail']['responseElements']['tasks'] ||
+    event['detail']['responseElements']['tasks'].length === 0
+  ) {
+    throw new Error('No tasks found in responseElements');
   }
   for (const task of event['detail']['responseElements']['tasks']) {
     try {
@@ -37,7 +40,6 @@ const storeInvocationDetails = async (
   data: RunTaskCommandInput,
 ) => {
   const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-  console.log(process.env)
   const input = {
     TableName: process.env.DYNAMODB_TABLE,
     Item: {
@@ -48,7 +50,6 @@ const storeInvocationDetails = async (
         parseInt(process.env.TTL_EXPIRES as string),
     },
   };
-  console.log(input);
   const command = new PutCommand(input);
   await docClient.send(command);
 };
