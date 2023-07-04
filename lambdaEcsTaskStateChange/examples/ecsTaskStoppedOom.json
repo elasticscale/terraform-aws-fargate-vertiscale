@@ -1,0 +1,104 @@
+{
+    "version": "0",
+    "id": "d1d60329-c0fc-27f7-4286-5121505aa3d9",
+    "detail-type": "ECS Task State Change",
+    "source": "aws.ecs",
+    "account": "564033685323",
+    "time": "2023-07-04T12:31:14Z",
+    "region": "eu-west-1",
+    "resources": [
+        "arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c"
+    ],
+    "detail": {
+        "attachments": [
+            {
+                "id": "c281b747-7f01-4833-87e4-efeba6d40a8d",
+                "type": "eni",
+                "status": "DELETED",
+                "details": [
+                    {
+                        "name": "subnetId",
+                        "value": "subnet-08ca430e7b591b8ec"
+                    },
+                    {
+                        "name": "networkInterfaceId",
+                        "value": "eni-0dda3c1c148c25dc4"
+                    },
+                    {
+                        "name": "macAddress",
+                        "value": "06:38:f3:77:58:6d"
+                    },
+                    {
+                        "name": "privateDnsName",
+                        "value": "ip-10-0-101-65.eu-west-1.compute.internal"
+                    },
+                    {
+                        "name": "privateIPv4Address",
+                        "value": "10.0.101.65"
+                    }
+                ]
+            }
+        ],
+        "attributes": [
+            {
+                "name": "ecs.cpu-architecture",
+                "value": "x86_64"
+            }
+        ],
+        "availabilityZone": "eu-west-1a",
+        "clusterArn": "arn:aws:ecs:eu-west-1:564033685323:cluster/prowler-scanner-cluster",
+        "connectivity": "CONNECTED",
+        "connectivityAt": "2023-07-04T12:30:16.647Z",
+        "containers": [
+            {
+                "containerArn": "arn:aws:ecs:eu-west-1:564033685323:container/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c/caad2e1d-60a8-4758-aa6a-e44380cd4f7f",
+                "exitCode": 0,
+                "lastStatus": "STOPPED",
+                "name": "prowler",
+                "image": "valentinomiazzo/jvm-memory-test",
+                "imageDigest": "sha256:bac145940a123a9bb416f53a7c9672d74dfd3b0d74f5d8ddc360d3a7b647f092",
+                "runtimeId": "43a4cd8b90884d4c8daf1f1e1970b71c-1747555552",
+                "reason": "OutOfMemoryError: Container killed due to memory usage",
+                "taskArn": "arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c",
+                "networkInterfaces": [
+                    {
+                        "attachmentId": "c281b747-7f01-4833-87e4-efeba6d40a8d",
+                        "privateIpv4Address": "10.0.101.65"
+                    }
+                ],
+                "cpu": "0"
+            }
+        ],
+        "cpu": "256",
+        "createdAt": "2023-07-04T12:30:13.132Z",
+        "desiredStatus": "STOPPED",
+        "enableExecuteCommand": false,
+        "ephemeralStorage": {
+            "sizeInGiB": 20
+        },
+        "executionStoppedAt": "2023-07-04T12:30:51.248Z",
+        "group": "family:prowler-scanner-564033685323",
+        "launchType": "FARGATE",
+        "lastStatus": "STOPPED",
+        "memory": "512",
+        "overrides": {
+            "containerOverrides": [
+                {
+                    "name": "prowler"
+                }
+            ]
+        },
+        "platformVersion": "1.4.0",
+        "pullStartedAt": "2023-07-04T12:30:34.64Z",
+        "pullStoppedAt": "2023-07-04T12:30:41.975Z",
+        "startedAt": "2023-07-04T12:30:43.193Z",
+        "stoppingAt": "2023-07-04T12:31:01.285Z",
+        "stoppedAt": "2023-07-04T12:31:14.381Z",
+        "stoppedReason": "Essential container in task exited",
+        "stopCode": "EssentialContainerExited",
+        "taskArn": "arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c",
+        "taskDefinitionArn": "arn:aws:ecs:eu-west-1:564033685323:task-definition/prowler-scanner-564033685323:5",
+        "updatedAt": "2023-07-04T12:31:14.381Z",
+        "version": 5
+    }
+}

@@ -60,9 +60,30 @@ resource "aws_cloudwatch_event_rule" "ecs_event_rule" {
       "ECS Task State Change"
     ],
     detail = {
+      // this checks for stopped tasks
       lastStatus = [
         "STOPPED"
       ]
+      // only the fargate tasks that stop
+      launchType = [
+        "FARGATE"
+      ]
+      // excludes services
+      group = [
+        {
+          "anything-but" = {
+            "prefix" : "service:"
+          }
+        }
+      ]
+      // only oom errors
+      containers = {
+        reason = [
+          {
+            "prefix" : "OutOfMemoryError:"
+          }
+        ]
+      }
     }
   })
 }

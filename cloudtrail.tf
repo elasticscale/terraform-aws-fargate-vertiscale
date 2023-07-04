@@ -10,6 +10,7 @@ resource "random_string" "random" {
 
 // trail needs to exist for the API call to be logged in Eventbridge
 resource "aws_cloudtrail" "cf_task_trail" {
+  count                         = var.setupCloudTrail ? 1 : 0
   depends_on                    = [module.s3_bucket]
   name                          = "${var.prefix}-task-trail"
   s3_bucket_name                = local.bucket_name
@@ -23,9 +24,10 @@ resource "aws_cloudtrail" "cf_task_trail" {
   }
 }
 
-// todo, check if cloudtrail trails are enabled for management events, otherwise create this + shorten lifecycle policy
 module "s3_bucket" {
-  source  = "cloudposse/cloudtrail-s3-bucket/aws"
-  version = "0.26.2"
-  name    = local.bucket_name
+  count           = var.setupCloudTrail ? 1 : 0
+  source          = "cloudposse/cloudtrail-s3-bucket/aws"
+  version         = "0.26.2"
+  name            = local.bucket_name
+  force_destroy   = true
 }
