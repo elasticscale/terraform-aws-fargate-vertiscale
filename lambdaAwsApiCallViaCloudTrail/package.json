@@ -4,7 +4,7 @@
   "description": "Handles the saving of response elements to DynamoDB.",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf ./build && tsc && cp package.json ./build && cp package-lock.json ./build && cd build && npm install --omit=dev",
+    "build": "rimraf ./build && tsc",
     "start:dev": "npx nodemon",
     "start": "npm run build && node build/index.js",
     "lint": "eslint . --ext .ts",
