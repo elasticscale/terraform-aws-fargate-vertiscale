@@ -87,6 +87,8 @@ resource "aws_lambda_function" "lambda_ct" {
   role             = aws_iam_role.lambda_ct.arn
   handler          = "handler.handler"
   runtime          = "nodejs18.x"
+  timeout          = 30
+  memory_size      = 512
   source_code_hash = data.archive_file.lambda_ct.output_base64sha256
   environment {
     variables = {
