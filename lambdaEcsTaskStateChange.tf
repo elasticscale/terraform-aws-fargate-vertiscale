@@ -104,8 +104,8 @@ resource "aws_lambda_function" "lambda_ecs" {
   source_code_hash = data.archive_file.lambda_ecs.output_base64sha256
   environment {
     variables = {
-      TTL_EXPIRES    = var.task_expires
       DYNAMODB_TABLE = "${var.prefix}-tasks"
+      MAXMEMORY = var.maxMemory
     }
   }
 }

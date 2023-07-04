@@ -8,6 +8,11 @@ variable "tagName" {
   description = "The tag name attached to RunTask command that triggers this module to run"
   default     = "fargateAutoscale"
 }
+variable "maxMemory" {
+  type       = number
+  description = "The maximum amount of memory to allow a task to use in MB"
+  default     = 122880
+}
 variable "region" {
   type        = string
   description = "AWS region to deploy to"
