@@ -1,7 +1,7 @@
 import { Task } from '@aws-sdk/client-ecs';
 
 const fargateConfigurations = {
-  WINDOWS: {
+  Windows: {
     1024: {
       memoryStart: 2048,
       memoryEnd: 8192,
@@ -18,7 +18,7 @@ const fargateConfigurations = {
       memoryStep: 1024,
     },
   },
-  LINUX: {
+  Linux: {
     // we can get away with ommitting the 512 mb as when this invokes would already be double
     256: {
       memoryStart: 1024,
@@ -61,7 +61,7 @@ const fargateConfigurations = {
 export const determineNewCpuMemory = (task: Task) => {
   if (
     !task['platformFamily'] ||
-    !(task['platformFamily'] == 'LINUX' || task['platformFamily'] == 'WINDOWS')
+    !(task['platformFamily'] == 'Linux' || task['platformFamily'] == 'Windows')
   ) {
     throw new Error('Task does not have a platform family');
   }
@@ -97,7 +97,7 @@ export const determineNewCpuMemory = (task: Task) => {
 };
 
 export const findCapacitySetting = <
-  T extends typeof fargateConfigurations['WINDOWS' | 'LINUX'],
+  T extends typeof fargateConfigurations['Windows' | 'Linux'],
 >(
   capacity: T,
   cpu: number,

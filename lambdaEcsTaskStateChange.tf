@@ -28,6 +28,21 @@ resource "aws_iam_role" "lambda_ecs" {
         },
         {
           Action = [
+            "iam:PassRole"
+          ]
+          Effect   = "Allow"
+          Resource = var.iamPassRoles
+        },
+        {
+          Action = [
+            "ecs:DescribeTasks",
+            "ecs:RunTask"
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        },        
+        {
+          Action = [
             "dynamodb:PutItem",
             "dynamodb:DeleteItem",
             "dynamodb:GetItem",
@@ -101,11 +116,13 @@ resource "aws_lambda_function" "lambda_ecs" {
   role             = aws_iam_role.lambda_ecs.arn
   handler          = "handler.handler"
   runtime          = "nodejs18.x"
+  timeout          = 30
+  memory_size      = 512
   source_code_hash = data.archive_file.lambda_ecs.output_base64sha256
   environment {
     variables = {
       DYNAMODB_TABLE = "${var.prefix}-tasks"
-      MAXMEMORY = var.maxMemory
+      MAXMEMORY      = var.maxMemory
     }
   }
 }

@@ -9,15 +9,18 @@ variable "tagName" {
   default     = "fargateAutoscale"
 }
 variable "maxMemory" {
-  type       = number
+  type        = number
   description = "The maximum amount of memory to allow a task to use in MB"
   default     = 122880
+}
+variable "iamPassRoles" {
+  type        = list(string)
+  description = "The possible IAM roles for your task definitions, this is used in the IAM policy to allow the lambda to start the tasks, using * is a bad practice here"
+  default     = ["*"]
 }
 variable "region" {
   type        = string
   description = "AWS region to deploy to"
-  // todo, delete default
-  default = "eu-west-1"
 }
 variable "task_expires" {
   type        = number

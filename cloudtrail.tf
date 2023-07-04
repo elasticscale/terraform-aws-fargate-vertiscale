@@ -25,9 +25,9 @@ resource "aws_cloudtrail" "cf_task_trail" {
 }
 
 module "s3_bucket" {
-  count           = var.setupCloudTrail ? 1 : 0
-  source          = "cloudposse/cloudtrail-s3-bucket/aws"
-  version         = "0.26.2"
-  name            = local.bucket_name
-  force_destroy   = true
+  count         = var.setupCloudTrail ? 1 : 0
+  source        = "cloudposse/cloudtrail-s3-bucket/aws"
+  version       = "0.26.2"
+  name          = local.bucket_name
+  force_destroy = true
 }

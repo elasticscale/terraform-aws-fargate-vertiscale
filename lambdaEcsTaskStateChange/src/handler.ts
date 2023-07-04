@@ -20,6 +20,7 @@ export const handler = async (
       ' could not find the runParameters in DynamoDB'
     );
   }
+  console.log(taskDetails);
   const newCpuMemory = determineNewCpuMemory(taskDetails);
   if (!newCpuMemory) {
     return event['detail']['taskArn'] + ' new memory could not be decided';
