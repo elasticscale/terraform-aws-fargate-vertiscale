@@ -1,0 +1,152 @@
+{
+    "version": "0",
+    "id": "fe5fe201-0c32-7c5a-014f-e84e61c4a54e",
+    "detail-type": "AWS API Call via CloudTrail",
+    "source": "aws.ecs",
+    "account": "564033685323",
+    "time": "2023-07-02T15:07:00Z",
+    "region": "eu-west-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.08",
+        "userIdentity": {
+            "type": "Root",
+            "principalId": "564033685323",
+            "arn": "arn:aws:iam::564033685323:root",
+            "accountId": "564033685323",
+            "accessKeyId": "xxx",
+            "sessionContext": {
+                "sessionIssuer": {},
+                "webIdFederationData": {},
+                "attributes": {
+                    "creationDate": "2023-07-02T12:05:58Z",
+                    "mfaAuthenticated": "true"
+                }
+            }
+        },
+        "eventTime": "2023-07-02T15:07:00Z",
+        "eventSource": "ecs.amazonaws.com",
+        "eventName": "RunTask",
+        "awsRegion": "eu-west-1",
+        "sourceIPAddress": "xx",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        "requestParameters": {
+            "cluster": "prowler-scanner-cluster",
+            "count": 1,
+            "enableECSManagedTags": true,
+            "enableExecuteCommand": false,
+            "launchType": "FARGATE",
+            "networkConfiguration": {
+                "awsvpcConfiguration": {
+                    "assignPublicIp": "ENABLED",
+                    "securityGroups": [
+                        "sg-08d298fb658ac0f24"
+                    ],
+                    "subnets": [
+                        "subnet-09a10a7cea694d5bd",
+                        "subnet-0a8a5ef82e4989fea",
+                        "subnet-08ca430e7b591b8ec"
+                    ]
+                }
+            },
+            "platformVersion": "LATEST",
+            "tags": [
+                {
+                    "key": "fargateAutoscale",
+                    "value": "x512"
+                },
+                {
+                    "key": "xcxc",
+                    "value": "ff"
+                }
+            ],
+            "taskDefinition": "arn:aws:ecs:eu-west-1:564033685323:task-definition/prowler-scanner-564033685323:5"
+        },
+        "responseElements": {
+            "tasks": [
+                {
+                    "attachments": [
+                        {
+                            "id": "4a72f19e-ff87-4c41-bb87-db1ba9d66d1f",
+                            "type": "ElasticNetworkInterface",
+                            "status": "PRECREATED",
+                            "details": [
+                                {
+                                    "name": "subnetId",
+                                    "value": "subnet-0a8a5ef82e4989fea"
+                                }
+                            ]
+                        }
+                    ],
+                    "attributes": [
+                        {
+                            "name": "ecs.cpu-architecture",
+                            "value": "x86_64"
+                        }
+                    ],
+                    "availabilityZone": "eu-west-1b",
+                    "clusterArn": "arn:aws:ecs:eu-west-1:564033685323:cluster/prowler-scanner-cluster",
+                    "containers": [
+                        {
+                            "containerArn": "arn:aws:ecs:eu-west-1:564033685323:container/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac/db06dfd4-0838-4274-ba4e-7aa65ce665f7",
+                            "taskArn": "arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac",
+                            "name": "prowler",
+                            "image": "valentinomiazzo/jvm-memory-test",
+                            "lastStatus": "PENDING",
+                            "networkInterfaces": [],
+                            "cpu": "0"
+                        }
+                    ],
+                    "cpu": "256",
+                    "createdAt": "Jul 2, 2023, 3:07:00 PM",
+                    "desiredStatus": "RUNNING",
+                    "enableExecuteCommand": false,
+                    "group": "family:prowler-scanner-564033685323",
+                    "lastStatus": "PROVISIONING",
+                    "launchType": "FARGATE",
+                    "memory": "512",
+                    "overrides": {
+                        "containerOverrides": [
+                            {
+                                "name": "prowler"
+                            }
+                        ],
+                        "inferenceAcceleratorOverrides": []
+                    },
+                    "platformFamily": "Linux",
+                    "platformVersion": "1.4.0",
+                    "tags": [
+                        {
+                            "key": "fargateAutoscale",
+                            "value": "yeah"
+                        },
+                        {
+                            "key": "aws:ecs:clusterName",
+                            "value": "prowler-scanner-cluster"
+                        }
+                    ],
+                    "taskArn": "arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac",
+                    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:564033685323:task-definition/prowler-scanner-564033685323:5",
+                    "version": 1,
+                    "ephemeralStorage": {
+                        "sizeInGiB": 20
+                    }
+                }
+            ],
+            "failures": []
+        },
+        "requestID": "6288557f-c583-4ac9-8eb3-fdb1973db0ac",
+        "eventID": "f1f26810-7ded-49e2-9d7a-97e68fbed725",
+        "readOnly": false,
+        "eventType": "AwsApiCall",
+        "managementEvent": true,
+        "recipientAccountId": "564033685323",
+        "eventCategory": "Management",
+        "tlsDetails": {
+            "tlsVersion": "TLSv1.2",
+            "cipherSuite": "ECDHE-RSA-AES128-GCM-SHA256",
+            "clientProvidedHostHeader": "ecs.eu-west-1.amazonaws.com"
+        },
+        "sessionCredentialFromConsole": "true"
+    }
+}

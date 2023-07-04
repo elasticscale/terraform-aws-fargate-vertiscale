@@ -34,7 +34,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 .DS_Store
-lambdaAwsApiCallViaCloudTrail/examples/*.json
 lambda_ct.zip
 lambda_ecs.zip
 .DS_Store
