@@ -34,8 +34,3 @@ override.tf.json
 .terraformrc
 terraform.rc
 .DS_Store
-lambda_ct.zip
-lambda_ecs.zip
-.DS_Store
-.DS_Store
-.DS_Store
