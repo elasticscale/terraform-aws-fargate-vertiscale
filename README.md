@@ -1,4 +1,13 @@
 <!-- BEGIN_TF_DOCS -->
+
+## Description
+
+This module automatically vertically scales AWS Fargate tasks when they run out memory due to an OOM Exception. It uses two Lambda functions to monitor for RunTask commands and for ECS stopped tasks. When it encounteres an OOM error it will restart the tasks automatically with double the memory.
+
+Your tasks have to be idempotent for this to work!
+
+For more debugging steps check out [the elasticscale blog](https://elasticscale.cloud/en/automatically-scaling-aws-fargate-tasks-vertically/).
+
 ## Requirements
 
 | Name | Version |
