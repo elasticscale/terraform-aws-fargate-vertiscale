@@ -9,12 +9,12 @@ variable "region" {
 variable "prefix" {
   type        = string
   description = "Value to prefix all resources with (lowercase)"
-  default     = "fargateautoscale"
+  default     = "fargatevertiscale"
 }
 variable "tag_name" {
   type        = string
   description = "The tag name attached to RunTask command that triggers this module to run"
-  default     = "fargateautoscale"
+  default     = "fargatevertiscale"
 }
 variable "max_memory" {
   type        = number
