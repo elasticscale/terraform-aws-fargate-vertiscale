@@ -68,7 +68,7 @@ resource "aws_cloudwatch_event_rule" "ct_event_rule" {
       ],
       requestParameters = {
         tags = {
-          key = [var.tagName]
+          key = [var.tag_name]
         }
       }
 

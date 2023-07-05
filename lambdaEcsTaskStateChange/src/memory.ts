@@ -76,7 +76,6 @@ export const determineNewCpuMemory = (task: Task) => {
     throw new Error('Task does not have a cpu or memory');
   }
   const capacity = fargateConfigurations[task['platformFamily']];
-
   const newMemory = parseInt(task['memory']) * 2;
   let currentCpuSetting = findCapacitySetting(
     capacity,
@@ -97,16 +96,14 @@ export const determineNewCpuMemory = (task: Task) => {
 };
 
 export const findCapacitySetting = <
-  T extends typeof fargateConfigurations['Windows' | 'Linux'],
+  T extends typeof fargateConfigurations['Linux' | 'Windows'],
 >(
   capacity: T,
-  cpu: number,
+  cpu: keyof T,
   memory: number,
 ) => {
   if (
-    // @ts-ignore
     memory < capacity[cpu]['memoryStart'] ||
-    // @ts-ignore
     memory > capacity[cpu]['memoryEnd']
   ) {
     // memory is out of range anyway
@@ -114,12 +111,9 @@ export const findCapacitySetting = <
   }
   const memoryOptions = [];
   for (
-    // @ts-ignore
     let limit = capacity[cpu]['memoryStart'];
-    // @ts-ignore
-    capacity[cpu]['memoryEnd'] >= limit;
-    // @ts-ignore
-    limit += capacity[cpu]['memoryStep']
+    capacity[cpu][cpu]['memoryEnd'] >= limit;
+    limit += capacity[cpu]['memoryStep'] as number
   ) {
     memoryOptions.push(limit);
   }
@@ -127,7 +121,7 @@ export const findCapacitySetting = <
     return {
       cpu: cpu,
       memory: memory,
-    };
+    } as { cpu: keyof T; memory: number };
   }
   return false;
 };

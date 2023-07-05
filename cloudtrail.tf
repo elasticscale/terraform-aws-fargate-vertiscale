@@ -10,7 +10,7 @@ resource "random_string" "random" {
 
 // trail needs to exist for the API call to be logged in Eventbridge
 resource "aws_cloudtrail" "cf_task_trail" {
-  count                         = var.setupCloudTrail ? 1 : 0
+  count                         = var.setup_cloud_trail ? 1 : 0
   depends_on                    = [module.s3_bucket]
   name                          = "${var.prefix}-task-trail"
   s3_bucket_name                = local.bucket_name
@@ -25,7 +25,7 @@ resource "aws_cloudtrail" "cf_task_trail" {
 }
 
 module "s3_bucket" {
-  count         = var.setupCloudTrail ? 1 : 0
+  count         = var.setup_cloud_trail ? 1 : 0
   source        = "cloudposse/cloudtrail-s3-bucket/aws"
   version       = "0.26.2"
   name          = local.bucket_name

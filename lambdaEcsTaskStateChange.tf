@@ -31,7 +31,7 @@ resource "aws_iam_role" "lambda_ecs" {
             "iam:PassRole"
           ]
           Effect   = "Allow"
-          Resource = var.iamPassRoles
+          Resource = var.iam_pass_roles
         },
         {
           Action = [
@@ -40,7 +40,7 @@ resource "aws_iam_role" "lambda_ecs" {
           ]
           Effect   = "Allow"
           Resource = "*"
-        },        
+        },
         {
           Action = [
             "dynamodb:PutItem",
@@ -122,7 +122,7 @@ resource "aws_lambda_function" "lambda_ecs" {
   environment {
     variables = {
       DYNAMODB_TABLE = "${var.prefix}-tasks"
-      MAXMEMORY      = var.maxMemory
+      MAXMEMORY      = var.max_memory
     }
   }
 }
