@@ -1,2 +1,2 @@
 process.env.DYNAMODB_TABLE = 'testTable';
-process.env.TTL_EXPIRES = 604800;
+process.env.MAXMEMORY = 4096;

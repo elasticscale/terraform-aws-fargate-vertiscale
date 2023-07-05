@@ -1,62 +1,176 @@
 import { handler } from './handler';
 import fs from 'fs';
-import { mockClient } from 'aws-sdk-client-mock';
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { getTaskDetails, getRunParameters, runTask } from './ecs';
+import { determineNewCpuMemory } from './memory';
 
-const ddbMock = mockClient(DynamoDBDocumentClient);
+jest.mock('./ecs');
+jest.mock('./memory');
 
 describe('handler', () => {
-  beforeEach(() => {
-    ddbMock.reset();
+  afterEach(() => {
+    jest.resetAllMocks();
   });
-  test('can insert workingExample to dynamodb', async () => {
-    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-    ddbMock.on(PutCommand).resolves({
-      Attributes: {},
+  test('can double memory of ecsTaskStoppedOom', async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    // @ts-expect-error mock implementation
+    determineNewCpuMemory.mockImplementation(() => ({
+      cpu: 1024,
+      memory: 4096,
+    }));
+    // @ts-expect-error mock implementation
+    getTaskDetails.mockImplementation(() => ({
+      taskArn:
+        'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+      platformFamily: 'Linux',
+      cpu: 1024,
+      memory: 2048,
+    }));
+    // @ts-expect-error mock implementation
+    getRunParameters.mockImplementation(() => ({
+      Item: {
+        taskArn:
+          'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+        launchType: 'FARGATE',
+        platformFamily: 'LINUX',
+      },
+    }));
+    // @ts-expect-error mock implementation
+    runTask.mockImplementation(() => true);
+    const data = JSON.parse(
+      fs.readFileSync('./examples/ecsTaskStoppedOom.json', 'utf8'),
+    );
+    await handler(data);
+    expect(log).toHaveBeenCalledWith('tasks have been started');
+  });
+  test('gives an error if the task cant be found', async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    // @ts-expect-error mock implementation
+    getTaskDetails.mockImplementation(() => false);
+    const data = JSON.parse(
+      fs.readFileSync('./examples/ecsTaskStoppedOom.json', 'utf8'),
+    );
+    await handler(data);
+    expect(log).toHaveBeenCalledWith(
+      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c could not be found via the ECS API',
+    );
+  });
+  test('gives an error if the task cant be found in dynamodb', async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    // @ts-expect-error mock implementation
+    getTaskDetails.mockImplementation(() => ({
+      taskArn:
+        'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+      platformFamily: 'Linux',
+      cpu: 1024,
+      memory: 2048,
+    }));
+    // @ts-expect-error mock implementation
+    getRunParameters.mockImplementation(() => false);
+    const data = JSON.parse(
+      fs.readFileSync('./examples/ecsTaskStoppedOom.json', 'utf8'),
+    );
+    await handler(data);
+    expect(log).toHaveBeenCalledWith(
+      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c could not find the runParameters in DynamoDB',
+    );
+  });
+  test('gives an error if it cant decide the memory', async () => {
+    const log = jest.spyOn(console, 'log');
+    // @ts-expect-error mock implementation
+    determineNewCpuMemory.mockImplementation(() => false);
+    // @ts-expect-error mock implementation
+    getTaskDetails.mockImplementation(() => ({
+      taskArn:
+        'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+      platformFamily: 'Linux',
+      cpu: 2048,
+      memory: 4096,
+    }));
+    // @ts-expect-error mock implementation
+    getRunParameters.mockImplementation(() => ({
+      Item: {
+        taskArn:
+          'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+        launchType: 'FARGATE',
+        platformFamily: 'LINUX',
+      },
+    }));
+    // @ts-expect-error mock implementation
+    runTask.mockImplementation(() => true);
+    const data = JSON.parse(
+      fs.readFileSync('./examples/ecsTaskStoppedOom.json', 'utf8'),
+    );
+    await handler(data);
+    expect(log).toHaveBeenCalledWith(
+      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c new memory could not be decided',
+    );
+  });
+  test('gives an error on low memory setting', async () => {
+    const log = jest.spyOn(console, 'log');
+    // @ts-expect-error mock implementation
+    determineNewCpuMemory.mockImplementation(() => ({
+      cpu: 1024,
+      memory: 8192,
+    }));
+    // @ts-expect-error mock implementation
+    getTaskDetails.mockImplementation(() => ({
+      taskArn:
+        'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+      platformFamily: 'Linux',
+      cpu: 2048,
+      memory: 4096,
+    }));
+    // @ts-expect-error mock implementation
+    getRunParameters.mockImplementation(() => ({
+      Item: {
+        taskArn:
+          'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+        launchType: 'FARGATE',
+        platformFamily: 'LINUX',
+      },
+    }));
+    // @ts-expect-error mock implementation
+    runTask.mockImplementation(() => true);
+    const data = JSON.parse(
+      fs.readFileSync('./examples/ecsTaskStoppedOom.json', 'utf8'),
+    );
+    await handler(data);
+    expect(log).toHaveBeenCalledWith(
+      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/43a4cd8b90884d4c8daf1f1e1970b71c new memory limit of 8192 would exceed max set of 4096',
+    );
+  });
+  test('catches error of runTask', async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    // @ts-expect-error mock implementation
+    determineNewCpuMemory.mockImplementation(() => ({
+      cpu: 1024,
+      memory: 4096,
+    }));
+    // @ts-expect-error mock implementation
+    getTaskDetails.mockImplementation(() => ({
+      taskArn:
+        'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+      platformFamily: 'Linux',
+      cpu: 1024,
+      memory: 2048,
+    }));
+    // @ts-expect-error mock implementation
+    getRunParameters.mockImplementation(() => ({
+      Item: {
+        taskArn:
+          'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
+        launchType: 'FARGATE',
+        platformFamily: 'LINUX',
+      },
+    }));
+    // @ts-expect-error mock implementation
+    runTask.mockImplementation(() => {
+      throw new Error('Wtf?');
     });
     const data = JSON.parse(
-      fs.readFileSync('./examples/workingExample.json', 'utf8'),
+      fs.readFileSync('./examples/ecsTaskStoppedOom.json', 'utf8'),
     );
     await handler(data);
-    expect(ddbMock.calls()).toHaveLength(1);
-    expect(log).toHaveBeenCalledWith('Logged the following tasks:', [
-      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
-    ]);
-  });
-  test('can insert multipleTasks to dynamodb', async () => {
-    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-    ddbMock.on(PutCommand).resolves({
-      Attributes: {},
-    });
-    const data = JSON.parse(
-      fs.readFileSync('./examples/multipleTasks.json', 'utf8'),
-    );
-    await handler(data);
-    expect(ddbMock.calls()).toHaveLength(2);
-    expect(log).toHaveBeenCalledWith('Logged the following tasks:', [
-      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac',
-      'arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118a1',
-    ]);
-  });
-  test('catches dynamodb errors properly', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
-    ddbMock.on(PutCommand).rejects(new Error('Some random error occurred'));
-    const data = JSON.parse(
-      fs.readFileSync('./examples/workingExample.json', 'utf8'),
-    );
-    await handler(data);
-    expect(ddbMock.calls()).toHaveLength(1);
-    expect(error).toHaveBeenCalledWith(
-      'Task arn:aws:ecs:eu-west-1:564033685323:task/prowler-scanner-cluster/13716fc088014c979ea8e353ae0118ac could not be saved in dynamodb: Some random error occurred',
-    );
-  });
-  test('catches the error if there are no tasks started', async () => {
-    const data = JSON.parse(
-      fs.readFileSync('./examples/noTasksExample.json', 'utf8'),
-    );
-    await expect(handler(data)).rejects.toThrowError(
-      'No tasks found in responseElements',
-    );
-  });
+    expect(log).toHaveBeenCalledWith('Could not start task: Wtf?');
+  }); 
 });

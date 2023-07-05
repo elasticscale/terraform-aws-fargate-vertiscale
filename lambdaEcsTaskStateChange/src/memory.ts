@@ -79,6 +79,7 @@ export const determineNewCpuMemory = (task: Task) => {
   const newMemory = parseInt(task['memory']) * 2;
   let currentCpuSetting = findCapacitySetting(
     capacity,
+    // @ts-expect-error todo
     parseInt(task['cpu']),
     newMemory,
   );
@@ -89,6 +90,7 @@ export const determineNewCpuMemory = (task: Task) => {
       cpu <= 16384 || currentCpuSetting;
       cpu = cpu * 2
     ) {
+      // @ts-expect-error todo
       currentCpuSetting = findCapacitySetting(capacity, cpu, newMemory);
     }
   }
@@ -96,14 +98,16 @@ export const determineNewCpuMemory = (task: Task) => {
 };
 
 export const findCapacitySetting = <
-  T extends typeof fargateConfigurations['Linux' | 'Windows'],
+  T extends typeof fargateConfigurations[keyof typeof fargateConfigurations],
 >(
   capacity: T,
   cpu: keyof T,
   memory: number,
 ) => {
   if (
+    // @ts-expect-error todo
     memory < capacity[cpu]['memoryStart'] ||
+    // @ts-expect-error todo
     memory > capacity[cpu]['memoryEnd']
   ) {
     // memory is out of range anyway
@@ -111,8 +115,11 @@ export const findCapacitySetting = <
   }
   const memoryOptions = [];
   for (
+    // @ts-expect-error todo
     let limit = capacity[cpu]['memoryStart'];
-    capacity[cpu][cpu]['memoryEnd'] >= limit;
+    // @ts-expect-error todo
+    capacity[cpu]['memoryEnd'] >= limit;
+    // @ts-expect-error todo
     limit += capacity[cpu]['memoryStep'] as number
   ) {
     memoryOptions.push(limit);

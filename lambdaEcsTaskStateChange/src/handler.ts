@@ -6,34 +6,46 @@ import { Task } from '@aws-sdk/client-ecs';
 export const handler = async (
   event: EventBridgeEvent<'ECS Task State Change', Task>,
 ) => {
-  console.log(JSON.stringify(event));
   const taskDetails = await getTaskDetails(event);
   if (!taskDetails) {
-    return event['detail']['taskArn'] + ' could not be found via the ECS API';
+    console.log(
+      event['detail']['taskArn'] + ' could not be found via the ECS API',
+    );
+    return false;
   }
   const runParameters = await getRunParameters(
     taskDetails['taskArn'] as string,
   );
   if (!runParameters) {
-    return (
+    console.log(
       event['detail']['taskArn'] +
-      ' could not find the runParameters in DynamoDB'
+        ' could not find the runParameters in DynamoDB',
     );
+    return false;
   }
-  console.log(taskDetails);
   const newCpuMemory = determineNewCpuMemory(taskDetails);
   if (!newCpuMemory) {
-    return event['detail']['taskArn'] + ' new memory could not be decided';
+    console.log(
+      event['detail']['taskArn'] + ' new memory could not be decided',
+    );
+    return false;
   }
   if (newCpuMemory['memory'] > parseInt(process.env.MAXMEMORY as string)) {
-    return (
+    console.log(
       event['detail']['taskArn'] +
-      ' new memory limit of ' +
-      newCpuMemory['memory'] +
-      ' would exceed max set of ' +
-      process.env.MAXMEMORY
+        ' new memory limit of ' +
+        newCpuMemory['memory'] +
+        ' would exceed max set of ' +
+        process.env.MAXMEMORY,
     );
+    return false;
   }
-  await runTask(taskDetails, newCpuMemory['cpu'], newCpuMemory['memory']);
-  return 'tasks have been started';
+  try {
+    await runTask(taskDetails, newCpuMemory['cpu'], newCpuMemory['memory']);
+  } catch (error) {
+    console.log('Could not start task: ' + (error as Error).message);
+    return false;
+  }
+
+  console.log('tasks have been started');
 };
