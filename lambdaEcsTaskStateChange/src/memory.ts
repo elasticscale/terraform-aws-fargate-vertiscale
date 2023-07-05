@@ -1,5 +1,3 @@
-import { Task } from '@aws-sdk/client-ecs';
-
 const fargateConfigurations = {
   Windows: {
     1024: {
@@ -58,52 +56,86 @@ const fargateConfigurations = {
   },
 };
 
-export const determineNewCpuMemory = (task: Task) => {
+export const determineNewCpuMemory = (
+  platformFamily: string,
+  cpuTask: string,
+  memoryTask: string,
+) => {
   if (
-    !task['platformFamily'] ||
-    !(task['platformFamily'] == 'Linux' || task['platformFamily'] == 'Windows')
+    !platformFamily ||
+    !(platformFamily == 'Linux' || platformFamily == 'Windows')
   ) {
     throw new Error('Task does not have a platform family');
   }
-  if (!fargateConfigurations[task['platformFamily']]) {
+  if (!fargateConfigurations[platformFamily]) {
     throw new Error(
       'Task family ' +
-        task['platformFamily'] +
+        platformFamily +
         ' was not defined in the capacity settings',
     );
   }
-  if (!task['memory'] || !task['cpu']) {
+  if (!memoryTask || !cpuTask) {
     throw new Error('Task does not have a cpu or memory');
   }
-  const capacity = fargateConfigurations[task['platformFamily']];
-  const newMemory = parseInt(task['memory']) * 2;
+  const capacity = fargateConfigurations[platformFamily];
+  const newMemory = parseInt(memoryTask) * 2;
   let currentCpuSetting = findCapacitySetting(
     capacity,
     // @ts-expect-error todo
-    parseInt(task['cpu']),
+    parseInt(cpuTask),
     newMemory,
   );
   if (!currentCpuSetting) {
     // check if we can get to the right setting if we double the cpu
     for (
-      let cpu = parseInt(task['cpu']);
+      let cpu = parseInt(cpuTask);
       cpu <= 16384 || currentCpuSetting;
       cpu = cpu * 2
     ) {
       // @ts-expect-error todo
       currentCpuSetting = findCapacitySetting(capacity, cpu, newMemory);
+      if (currentCpuSetting) {
+        break;
+      }
+    }
+  }
+  if (!currentCpuSetting) {
+    // some combos bound by new memory because its an uneven number, so we loop over the memory as well
+    for (
+      let cpu = parseInt(cpuTask);
+      cpu <= 16384 || currentCpuSetting;
+      cpu = cpu * 2
+    ) {
+      for (
+        let memoryCheck = newMemory;
+        memoryCheck <= 122880;
+        memoryCheck = memoryCheck + 1024
+      ) {
+        // @ts-expect-error todo
+        currentCpuSetting = findCapacitySetting(capacity, cpu, memoryCheck);
+        if (currentCpuSetting) {
+          break;
+        }
+      }
+      if (currentCpuSetting) {
+        break;
+      }
     }
   }
   return currentCpuSetting;
 };
 
-export const findCapacitySetting = <
+const findCapacitySetting = <
   T extends typeof fargateConfigurations[keyof typeof fargateConfigurations],
 >(
   capacity: T,
   cpu: keyof T,
   memory: number,
 ) => {
+  if (!capacity[cpu]) {
+    // cpu is out of bounds
+    return false;
+  }
   if (
     // @ts-expect-error todo
     memory < capacity[cpu]['memoryStart'] ||

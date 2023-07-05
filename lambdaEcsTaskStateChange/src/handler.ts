@@ -23,7 +23,11 @@ export const handler = async (
     );
     return false;
   }
-  const newCpuMemory = determineNewCpuMemory(taskDetails);
+  const newCpuMemory = determineNewCpuMemory(
+    taskDetails['platformFamily'] as string,
+    taskDetails['cpu'] as string,
+    taskDetails['memory'] as string,
+  );
   if (!newCpuMemory) {
     console.log(
       event['detail']['taskArn'] + ' new memory could not be decided',

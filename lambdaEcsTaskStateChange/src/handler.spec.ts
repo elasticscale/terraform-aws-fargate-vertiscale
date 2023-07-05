@@ -172,5 +172,5 @@ describe('handler', () => {
     );
     await handler(data);
     expect(log).toHaveBeenCalledWith('Could not start task: Wtf?');
-  }); 
+  });
 });
