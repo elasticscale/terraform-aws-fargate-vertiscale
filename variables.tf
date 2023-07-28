@@ -2,10 +2,6 @@ variable "iam_pass_roles" {
   type        = list(string)
   description = "The possible IAM roles for your task definitions, this is used in the IAM policy to allow the lambda to pass the role, using [*] is a bad practice here"
 }
-variable "region" {
-  type        = string
-  description = "AWS region to deploy to"
-}
 variable "prefix" {
   type        = string
   description = "Value to prefix all resources with (lowercase)"
