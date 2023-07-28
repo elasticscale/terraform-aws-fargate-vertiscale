@@ -46,7 +46,7 @@ resource "aws_iam_role" "lambda_ct" {
 data "archive_file" "lambda_ct" {
   type        = "zip"
   source_dir  = "${path.module}/lambdaAwsApiCallViaCloudTrail/build"
-  output_path = "lambda_ct.zip"
+  output_path = "${path.module}/lambda_ct.zip"
 }
 
 resource "aws_cloudwatch_event_rule" "ct_event_rule" {
@@ -81,7 +81,7 @@ resource "aws_cloudwatch_event_target" "ct_event_target" {
   arn       = aws_lambda_function.lambda_ct.arn
 }
 resource "aws_lambda_function" "lambda_ct" {
-  filename         = "lambda_ct.zip"
+  filename         = "${path.module}/lambda_ct.zip"
   function_name    = "${var.prefix}-lambdaAwsApiCallViaCloudTrail"
   description      = "Catches RunTask commands from CloudTrail and stores them in DynamoDB"
   role             = aws_iam_role.lambda_ct.arn

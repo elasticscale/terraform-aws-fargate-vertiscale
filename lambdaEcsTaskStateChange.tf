@@ -61,7 +61,7 @@ resource "aws_iam_role" "lambda_ecs" {
 data "archive_file" "lambda_ecs" {
   type        = "zip"
   source_dir  = "${path.module}/lambdaEcsTaskStateChange/build"
-  output_path = "lambda_ecs.zip"
+  output_path = "${path.module}/lambda_ecs.zip"
 }
 
 resource "aws_cloudwatch_event_rule" "ecs_event_rule" {
@@ -110,7 +110,7 @@ resource "aws_cloudwatch_event_target" "ecs_event_target" {
 }
 
 resource "aws_lambda_function" "lambda_ecs" {
-  filename         = "lambda_ecs.zip"
+  filename         = "${path.module}/lambda_ecs.zip"
   function_name    = "${var.prefix}-lambdaEcsTaskStateChange"
   description      = "Reboots ECS tasks if they are hitting an OOM"
   role             = aws_iam_role.lambda_ecs.arn
